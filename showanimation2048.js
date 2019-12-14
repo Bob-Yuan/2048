@@ -3,6 +3,7 @@ function showNumberWithAnimation(i, j, randNumber){
 
     numberCell.css("background-color", getNumberBackgroundColor(randNumber));
     numberCell.css('color', getNumberColor( randNumber));
+    numberCell.css('font-size', 0.6*cellSideLength+'px');
     numberCell.text(randNumber);
 
     numberCell.animate({

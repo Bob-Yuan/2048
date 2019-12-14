@@ -2,6 +2,11 @@ var board = new Array();
 var score = 0;
 var hasConflicted = new Array();
 
+var startx = 0;
+var starty = 0;
+var endx = 0;
+var endy = 0;
+
 $(document).ready(function(){
     prepareForMobile();
     newgame();
@@ -84,8 +89,12 @@ function updateBoardView(){
                 theNumberCell.css("background-color", getNumberBackgroundColor(board[i][j]));
                 theNumberCell.css("color", getNumberColor(board[i][j]));
                 theNumberCell.text(board[i][j]);
+                theNumberCell.css('line-height', cellSideLength+'px');
+                theNumberCell.css('font-size', 0.6*cellSideLength+'px');
                 if(board[i][j]>=1000){
-                    theNumberCell.css('font-size', '40px');
+                    theNumberCell.css('font-size', 0.6*0.75*cellSideLength+'px');
+                }else if(board[i][j]>=10000){
+                    theNumberCell.css('font-size', 0.6*0.6*cellSideLength+'px');
                 }
             }
 
@@ -93,7 +102,7 @@ function updateBoardView(){
         }
     }
     $(".number-cell").css('line-height', cellSideLength+'px');
-    $(".number-cell").css('font-size', 0.6*cellSideLength+'px');
+    // $(".number-cell").css('font-size', 0.6*cellSideLength+'px');
 }
 
 function generateOneNumber(){
@@ -134,6 +143,7 @@ $(document).keydown( function(event){
         case 37:  //left
         case 52:
         case 100:
+            event.preventDefault();
             if(myMoveLeft()){
                 setTimeout("generateOneNumber()",210);
                 setTimeout("isgameover()",300);
@@ -142,6 +152,7 @@ $(document).keydown( function(event){
         case 38: //up
         case 56:
         case 104:
+            event.preventDefault();
             if(myMoveUp()){
                 setTimeout("generateOneNumber()",210);
                 setTimeout("isgameover()",300);
@@ -150,6 +161,7 @@ $(document).keydown( function(event){
         case 39:  //right
         case 54:
         case 102:
+            event.preventDefault();
             if(myMoveRight()){
                 setTimeout("generateOneNumber()",210);
                 setTimeout("isgameover()",300);
@@ -158,6 +170,7 @@ $(document).keydown( function(event){
         case 40:  //down
         case 50:
         case 98:
+            event.preventDefault();
             if(myMoveDown()){
                 setTimeout("generateOneNumber()",210);
                 setTimeout("isgameover()",300);
@@ -165,6 +178,7 @@ $(document).keydown( function(event){
             break;
         case 49:
         case 97:
+            event.preventDefault();
             if(MoveLeftDown()){
                 setTimeout("generateOneNumber()",210);
                 setTimeout("isgameover()",300);
@@ -172,6 +186,7 @@ $(document).keydown( function(event){
             break;
         case 51:
         case 99:
+            event.preventDefault();
             if(MoveRightDown()){
                 setTimeout("generateOneNumber()",210);
                 setTimeout("isgameover()",300);
@@ -179,6 +194,7 @@ $(document).keydown( function(event){
             break;
         case 55:
         case 103:
+            event.preventDefault();
             if(MoveLeftUp()){
                 setTimeout("generateOneNumber()",210);
                 setTimeout("isgameover()",300);
@@ -186,6 +202,7 @@ $(document).keydown( function(event){
             break;
         case 57:
         case 105:
+            event.preventDefault();
             if(MoveRightUp()){
                 setTimeout("generateOneNumber()",210);
                 setTimeout("isgameover()",300);
@@ -195,6 +212,67 @@ $(document).keydown( function(event){
             break;
     }
 } );
+
+document.addEventListener('touchstart', function(event){
+    startx = event.touches[0].pageX;
+    starty = event.touches[0].pageY;
+});
+
+document.addEventListener('touchend', function(event){
+    endx = event.changedTouches[0].pageX;
+    endy = event.changedTouches[0].pageY;
+
+    var deltax = endx - startx;
+    var deltay = endy - starty;
+
+    if(Math.abs(deltax)<0.15*documentWidth && Math.abs(deltay)<0.15*documentWidth)
+        return;
+
+    if(Math.abs(deltax) >= Math.abs(deltay)){
+        //x
+        if(deltax > 0){
+            //move right
+            if(myMoveRight()){
+                setTimeout("generateOneNumber()",210);
+                setTimeout("isgameover()",300);
+            }
+        }
+        else{
+            //move left
+            if(myMoveLeft()){
+                setTimeout("generateOneNumber()",210);
+                setTimeout("isgameover()",300);
+            }
+        }
+    }else{
+        //y
+        if(deltay > 0){
+            //move down
+            if(myMoveDown()){
+                setTimeout("generateOneNumber()",210);
+                setTimeout("isgameover()",300);
+            }
+        }
+        else{
+            //move up
+            if(myMoveUp()){
+                setTimeout("generateOneNumber()",210);
+                setTimeout("isgameover()",300);
+            }
+        }
+    }
+});
+
+function isgameover(){
+    //alert(nospace(board)+":"+nomove(board));
+    if(nospace(board) && nomove(board)){
+        gameover();
+    }
+}
+
+function gameover(){
+    alert("Game Over!");
+}
 
 function myMoveLeft(){
 
@@ -626,15 +704,4 @@ function MoveLeftUp(){
     setTimeout("updateBoardView()",200);
 
     return true;
-}
-
-function isgameover(){
-    //alert(nospace(board)+":"+nomove(board));
-    if(nospace(board) && nomove(board)){
-        gameover();
-    }
-}
-
-function gameover(){
-    alert("Game Over!");
 }
